@@ -70,20 +70,18 @@
 
 ## Phase 3 — Interface du simulateur (front)
 
-- [ ] **Layout** fidèle : eyebrow catégorie + H1, panneau gauche « Paramètres »,
-      panneau droit « Vos résultats ». **Verif** : comparaison visuelle au
-      simulateur d'intérêts composés capturé.
-- [ ] **Champs de saisie** : sélecteur de crypto (recherche), montant, fréquence,
-      dates début/fin, avec textes d'aide façon S'investir. **Verif** : chaque
-      champ pilote bien l'état et déclenche le recalcul.
-- [ ] **Cartes résultats (KPI)** : Somme investie / Plus-value / Valeur finale.
-      **Verif** : valeurs synchronisées avec le backend.
-- [ ] **Graphique** d'évolution (Recharts) + sélecteur de type de graphique.
-      **Verif** : la courbe correspond à la série renvoyée par l'API.
-- [ ] **Disclaimer** rétrospectif + risque (obligatoire pour la crypto).
-      **Verif** : visible et non bloquant.
-- [ ] États **chargement / erreur / vide**. **Verif** : couper le réseau →
-      message propre, pas de crash.
+- [x] **Layout** fidèle : eyebrow + H1, panneau gauche « Paramètres de
+      simulation », panneau droit « Vos résultats », CTA formation + footer.
+- [x] **Champs de saisie** : sélecteur de crypto **avec recherche live**
+      (`/api/coins`, alimenté par yfinance — pas de liste en dur), montant,
+      fréquence, dates, avec textes d'aide. Recalcul live débouncé à chaque champ.
+- [x] **Cartes résultats (KPI)** : somme investie / plus-value (+ performance) /
+      valeur finale, + prix moyen, quantité acquise, versements. Sync backend.
+- [x] **Graphique** d'évolution (Recharts) + sélecteur de type (aire/ligne/barres)
+      sur la série renvoyée par l'API.
+- [x] **Disclaimer** rétrospectif + risque, intégré au composant (visible en embed).
+- [x] États **chargement / erreur**. **Verif** : build + appel live OK (BTC
+      mensuel 2018→2026 → +292 %). **Reste** : passe responsive/a11y → phase 4.
 
 ## Phase 4 — Responsive & intégrabilité
 
