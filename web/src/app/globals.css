@@ -35,6 +35,9 @@
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
+  --color-gain: var(--gain);
+  --color-loss: var(--loss);
+  --color-navy: var(--navy);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
@@ -55,24 +58,30 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
+  /* S'investir brand */
+  --primary: #1098f7;
+  --primary-foreground: #ffffff;
+  --secondary: #f8d047;
+  --secondary-foreground: #00173f;
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
+  --accent: #e9f4ff;
+  --accent-foreground: #00173f;
+  --destructive: #ff0500;
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
+  --ring: #1098f7;
+  /* semantic (retrospective results) */
+  --gain: #11d05a;
+  --loss: #ff0500;
+  --navy: #00173f;
+  /* chart palette */
+  --chart-1: #1098f7;
+  --chart-2: #11d05a;
+  --chart-3: #f8d047;
+  --chart-4: #7899ce;
+  --chart-5: #00173f;
+  --radius: 1rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
