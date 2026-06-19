@@ -32,6 +32,7 @@ export default function Home() {
         <Button
           variant="default"
           size="lg"
+          nativeButton={false}
           className="bg-navy text-white hover:bg-navy/90"
           render={
             <a href="https://sinvestir.fr" target="_blank" rel="noreferrer">
