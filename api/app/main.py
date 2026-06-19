@@ -12,7 +12,7 @@ class Health(BaseModel):
     status: str
 
 
-@app.get("/health")
+@app.get("/api/health")
 def health() -> Health:
     """Liveness probe."""
     return Health(status="ok")

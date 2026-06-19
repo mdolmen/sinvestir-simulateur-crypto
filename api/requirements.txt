@@ -1,0 +1,6 @@
+# Runtime deps for the Vercel Python function (mirrors pyproject [project.dependencies]).
+# Source of truth is pyproject.toml / uv.lock; this file is what @vercel/python installs.
+fastapi>=0.115
+pydantic>=2.9
+pandas>=2.2
+yfinance>=0.2.50
