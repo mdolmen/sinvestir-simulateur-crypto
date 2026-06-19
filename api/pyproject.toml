@@ -1,0 +1,39 @@
+[project]
+name = "sinvestir-crypto-api"
+version = "0.1.0"
+description = "Backtest engine and price API for the S'investir crypto simulator"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "pydantic>=2.9",
+    "pandas>=2.2",
+    "yfinance>=0.2.50",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.8",
+    "mypy>=1.13",
+    "httpx>=0.28",
+    "uvicorn>=0.32",
+    "pandas-stubs>=2.2",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+
+[[tool.mypy.overrides]]
+module = "yfinance.*"
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
