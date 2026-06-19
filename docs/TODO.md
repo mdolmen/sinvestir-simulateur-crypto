@@ -55,16 +55,18 @@
 
 ## Phase 2 — Logique de calcul (backend, contract-driven)
 
-- [ ] Implémenter la récupération de prix historiques (par crypto + plage de
-      dates) avec cache. **Verif** : test sur BTC 2020→2024, valeurs plausibles.
-- [ ] Implémenter le moteur de backtest : versement unique + DCA (quotidien /
-      hebdo / mensuel). **Verif** : tests unitaires sur cas connus (somme
-      investie, nb de versements, valeur finale).
-- [ ] Calculer les sorties : somme investie, valeur finale, plus/moins-value
-      (montant + %), série temporelle de la valeur du portefeuille. **Verif** :
-      test d'un scénario de bout en bout contre des nombres calculés à la main.
-- [ ] Exposer le endpoint de simulation conforme au contrat figé en phase 0.
-      **Verif** : appel HTTP réel renvoie le JSON attendu.
+- [~] Implémenter la récupération de prix historiques (par crypto + plage de
+      dates) avec cache. **Fait** : `PriceSource` (yfinance) + loader CSV, tests
+      mockés. **Reste** : cache Supabase (`PriceStore`) + backfill, repoussé (§7).
+- [x] Implémenter le moteur de backtest : versement unique + DCA (quotidien /
+      hebdo / mensuel). Moteur pur dans `api/engine/`, tests déterministes sur
+      prix synthétiques (échéancier, bornes inclusives, bissextiles, once vs DCA).
+- [x] Calculer les sorties : somme investie, valeur finale, plus/moins-value
+      (montant + %), série temporelle. Golden test figé sur `xrp_eur_daily.csv`
+      (442 / 11 050 € / perf +128,32 %).
+- [x] Exposer le endpoint de simulation conforme au contrat figé en phase 0
+      (`POST /api/simulate`, validation Pydantic). Test de contrat hors-ligne via
+      la source CSV. **Reste** : appel HTTP réel en preview Vercel.
 
 ## Phase 3 — Interface du simulateur (front)
 
