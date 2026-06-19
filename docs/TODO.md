@@ -42,15 +42,16 @@
 
 ## Phase 1 — Socle projet
 
-- [ ] Initialiser le repo Next.js + Tailwind + shadcn/ui. **Verif** : `dev`
-      tourne, page blanche stylée.
-- [ ] Importer les **tokens de design** S'investir (couleurs, typo Lexend,
-      rayons, ombres) depuis `docs/DESIGN.md` dans la config Tailwind/CSS.
-      **Verif** : une page de démo affiche la palette et la typo correctes.
-- [ ] Mettre en place le backend Python (FastAPI) + lancement local. **Verif** :
-      `/health` répond 200.
-- [ ] Câbler le déploiement Vercel (front + functions). **Verif** : preview URL
-      en ligne avec le `/health` accessible.
+- [x] Initialiser le repo Next.js + Tailwind v4 + shadcn/ui (`web/`). **Verif** :
+      `build` passe.
+- [x] Importer les **tokens de design** S'investir (couleurs, typo Lexend,
+      rayons) dans `web/src/app/globals.css`. **Verif** : page de vérif affiche la
+      palette et la typo.
+- [x] Mettre en place le backend Python (FastAPI, uv) + `/api/health`. **Verif** :
+      pytest vert (ruff + mypy --strict OK).
+- [~] Câbler le déploiement Vercel (`vercel.json` + entrypoint ASGI +
+      `requirements.txt`). **Reste** : `vercel deploy` réel → valider la preview
+      URL et `/api/health` en ligne (non vérifiable en local).
 
 ## Phase 2 — Logique de calcul (backend, contract-driven)
 
