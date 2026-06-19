@@ -2,10 +2,20 @@
 
 from __future__ import annotations
 
+import re
 from datetime import date, timedelta
 
 import pandas as pd
 import yfinance as yf
+
+from prices.base import CoinMatch
+
+# Trailing quote-currency word in Yahoo's shortName, e.g. "Bitcoin EUR" -> "Bitcoin".
+_CURRENCY_SUFFIX = re.compile(
+    r"\s+(USD|EUR|CAD|GBP|JPY|CNY|AUD|CHF|INR|KRW|BRL)$", re.IGNORECASE
+)
+_SEARCH_COUNT = 50  # Yahoo lookup window; deduped down to distinct base symbols.
+_SEARCH_LIMIT = 20  # max coins returned to the picker.
 
 
 def normalize(frame: pd.DataFrame) -> pd.Series[float]:
@@ -34,3 +44,22 @@ class YahooPriceSource:
             interval="1d",
         )
         return normalize(frame)
+
+    def search_coins(self, query: str, currency: str) -> list[CoinMatch]:
+        query = query.strip()
+        if not query:
+            return []
+        frame = yf.Lookup(query).get_cryptocurrency(count=_SEARCH_COUNT)
+        matches: list[CoinMatch] = []
+        seen: set[str] = set()
+        for symbol, row in frame.iterrows():
+            base = str(symbol).split("-")[0]
+            if base in seen:
+                continue
+            seen.add(base)
+            raw_name = str(row.get("shortName", base))
+            name = _CURRENCY_SUFFIX.sub("", raw_name).strip() or base
+            matches.append(CoinMatch(symbol=base, name=name))
+            if len(matches) >= _SEARCH_LIMIT:
+                break
+        return matches

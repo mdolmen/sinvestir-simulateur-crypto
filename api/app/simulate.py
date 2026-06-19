@@ -9,10 +9,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field, model_validator
 
 from app.config import DEFAULT_CURRENCY, MIN_DATE, Currency
+from app.deps import get_price_source
 from engine.backtest import run_backtest
 from engine.schedule import Frequency
 from prices.base import PriceSource
-from prices.yahoo import YahooPriceSource
 
 router = APIRouter()
 
@@ -51,11 +51,6 @@ class SimulationResponse(BaseModel):
     gains: float
     performance: float
     series: list[SeriesPointOut]
-
-
-def get_price_source() -> PriceSource:
-    """Production price source — overridable in tests via dependency_overrides."""
-    return YahooPriceSource()
 
 
 @router.post("/api/simulate")

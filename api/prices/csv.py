@@ -7,6 +7,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from prices.base import CoinMatch
+
 
 def load_price_csv(path: str | Path) -> pd.Series[float]:
     """Load a `date,close` CSV into an ascending close series indexed by date."""
@@ -24,3 +26,6 @@ class CsvPriceSource:
 
     def fetch(self, coin: str, currency: str, start: date, end: date) -> pd.Series[float]:
         return self._series
+
+    def search_coins(self, query: str, currency: str) -> list[CoinMatch]:
+        return []  # offline fixture source — search is not supported.

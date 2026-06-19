@@ -8,8 +8,8 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
+from app.deps import get_price_source
 from app.main import app
-from app.simulate import get_price_source
 from prices.csv import CsvPriceSource
 
 FIXTURE = Path(__file__).parent / "fixtures" / "xrp_eur_daily.csv"
