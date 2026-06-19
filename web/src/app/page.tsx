@@ -1,7 +1,4 @@
-import { ArrowRight } from "lucide-react";
-
 import { CryptoSimulator } from "@/components/simulator/CryptoSimulator";
-import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
@@ -21,27 +18,6 @@ export default function Home() {
       </header>
 
       <CryptoSimulator />
-
-      <section className="flex flex-col items-start gap-4 rounded-2xl bg-secondary p-6 text-secondary-foreground sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-bold">Passez de la simulation à l&apos;action</h2>
-          <p className="text-sm text-secondary-foreground/80">
-            Apprenez à investir sereinement avec la formation offerte S&apos;investir.
-          </p>
-        </div>
-        <Button
-          variant="default"
-          size="lg"
-          nativeButton={false}
-          className="bg-navy text-white hover:bg-navy/90"
-          render={
-            <a href="https://sinvestir.fr" target="_blank" rel="noreferrer">
-              Accéder à la formation offerte
-              <ArrowRight />
-            </a>
-          }
-        />
-      </section>
 
       <footer className="border-t pt-6 text-sm text-muted-foreground">
         <p>
