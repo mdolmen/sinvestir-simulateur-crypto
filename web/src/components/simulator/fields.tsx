@@ -44,11 +44,7 @@ export function SimField({
         className="flex items-center gap-1.5 text-xs font-light text-blue-light"
       >
         {label}
-        {hint && (
-          <span title={hint}>
-            <Info className="size-3.5 text-blue-light/60" aria-label={hint} />
-          </span>
-        )}
+        {hint && <InfoTooltip text={hint} />}
       </label>
       {children}
     </div>
