@@ -5,31 +5,29 @@ interface KpiCardProps {
   value: string;
   hint?: string;
   tone?: "default" | "gain" | "loss";
-  emphasis?: boolean;
+  className?: string;
 }
 
-export function KpiCard({ label, value, hint, tone = "default", emphasis }: KpiCardProps) {
+export function KpiCard({ label, value, hint, tone = "default", className }: KpiCardProps) {
   return (
     <div
       className={cn(
-        "flex flex-col gap-1 rounded-2xl border bg-card p-4",
-        emphasis && "ring-1 ring-primary/20",
+        "flex flex-col justify-between gap-2 rounded-2xl border border-white/10 bg-white/5 p-5",
+        className,
       )}
     >
-      <span className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-        {label}
-      </span>
+      <span className="text-xs font-light text-blue-light">{label}</span>
       <span
         className={cn(
-          "text-2xl font-bold tabular-nums",
+          "text-2xl font-normal tabular-nums",
           tone === "gain" && "text-gain",
           tone === "loss" && "text-loss",
-          tone === "default" && "text-foreground",
+          tone === "default" && "text-white",
         )}
       >
         {value}
       </span>
-      {hint && <span className="text-sm font-medium text-muted-foreground tabular-nums">{hint}</span>}
+      {hint && <span className="text-xs font-light text-blue-light tabular-nums">{hint}</span>}
     </div>
   );
 }

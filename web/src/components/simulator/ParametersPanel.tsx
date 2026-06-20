@@ -1,8 +1,7 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { ChevronDown, ChevronUp, Save, Share2 } from "lucide-react";
+
 import {
   Select,
   SelectContent,
@@ -14,6 +13,8 @@ import { FREQUENCY_OPTIONS, MIN_DATE, todayISO } from "@/lib/config";
 import type { Frequency, SimulationRequest } from "@/lib/types";
 
 import { CoinCombobox } from "./CoinCombobox";
+import { ComingSoonButton } from "./ComingSoonButton";
+import { SectionTitle, SimField, underlineInputClass } from "./fields";
 
 interface ParametersPanelProps {
   params: SimulationRequest;
@@ -24,64 +25,67 @@ const FREQUENCY_ITEMS: Record<string, string> = Object.fromEntries(
   FREQUENCY_OPTIONS.map((o) => [o.value, o.label]),
 );
 
-function FieldRow({
-  label,
-  htmlFor,
-  hint,
-  children,
-}: {
-  label: string;
-  htmlFor: string;
-  hint: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <Label htmlFor={htmlFor} className="font-medium">
-        {label}
-      </Label>
-      {children}
-      <p className="text-xs text-muted-foreground">{hint}</p>
-    </div>
-  );
-}
+const safeAmount = (value: number): number => (Number.isNaN(value) ? 0 : value);
+
+const selectTriggerClass =
+  "w-full justify-between rounded-none border-0 border-b border-blue-light/30 bg-transparent px-0 py-2 text-base font-light text-white hover:bg-transparent data-[placeholder]:text-blue-light focus-visible:ring-0";
 
 export function ParametersPanel({ params, onChange }: ParametersPanelProps) {
   const update = (patch: Partial<SimulationRequest>) => onChange({ ...params, ...patch });
   const today = todayISO();
 
   return (
-    <Card className="h-fit rounded-2xl">
-      <CardHeader>
-        <CardTitle className="text-lg">Paramètres de simulation</CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-5">
-        <FieldRow label="Crypto-monnaie" htmlFor="coin" hint="La crypto à backtester.">
-          <CoinCombobox id="coin" value={params.coin} onChange={(coin) => update({ coin })} />
-        </FieldRow>
+    <div className="flex flex-col gap-6 lg:col-span-2">
+      <SectionTitle>Paramètres de simulation</SectionTitle>
 
-        <FieldRow
+      <div className="space-y-6 sm:space-y-8">
+        <SimField label="Crypto-monnaie" htmlFor="coin" hint="La crypto à backtester.">
+          <CoinCombobox id="coin" value={params.coin} onChange={(coin) => update({ coin })} />
+        </SimField>
+
+        <SimField
           label="Montant"
           htmlFor="amount"
           hint="Somme investie à chaque échéance (ou en une fois)."
         >
-          <div className="relative">
-            <Input
+          <div className="group relative">
+            <input
               id="amount"
-              type="number"
-              min={0}
-              step={5}
+              type="text"
+              inputMode="decimal"
               value={Number.isNaN(params.amount) ? "" : params.amount}
-              onChange={(e) => update({ amount: e.target.valueAsNumber })}
-              className="pr-8"
+              onChange={(e) => update({ amount: Number(e.target.value.replace(",", ".")) })}
+              className={`${underlineInputClass} pr-20`}
             />
-            <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-muted-foreground">
-              €
-            </span>
+            <div className="pointer-events-none absolute top-1/2 right-0 flex -translate-y-1/2 items-center gap-2">
+              <div className="flex flex-col text-blue-light opacity-0 transition-opacity group-focus-within:pointer-events-auto group-focus-within:opacity-100">
+                <button
+                  type="button"
+                  tabIndex={-1}
+                  aria-label="Augmenter le montant"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => update({ amount: safeAmount(params.amount) + 1 })}
+                  className="transition-colors hover:text-white"
+                >
+                  <ChevronUp className="size-4" />
+                </button>
+                <button
+                  type="button"
+                  tabIndex={-1}
+                  aria-label="Diminuer le montant"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => update({ amount: Math.max(0, safeAmount(params.amount) - 1) })}
+                  className="transition-colors hover:text-white"
+                >
+                  <ChevronDown className="size-4" />
+                </button>
+              </div>
+              <span className="text-sm font-light text-blue-light">EUR</span>
+            </div>
           </div>
-        </FieldRow>
+        </SimField>
 
-        <FieldRow
+        <SimField
           label="Fréquence"
           htmlFor="frequency"
           hint="Versement unique ou investissement programmé (DCA)."
@@ -91,7 +95,7 @@ export function ParametersPanel({ params, onChange }: ParametersPanelProps) {
             value={params.frequency}
             onValueChange={(value) => update({ frequency: value as Frequency })}
           >
-            <SelectTrigger id="frequency" className="w-full">
+            <SelectTrigger id="frequency" className={selectTriggerClass}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -102,31 +106,44 @@ export function ParametersPanel({ params, onChange }: ParametersPanelProps) {
               ))}
             </SelectContent>
           </Select>
-        </FieldRow>
+        </SimField>
 
-        <div className="grid grid-cols-2 gap-3">
-          <FieldRow label="Depuis" htmlFor="start" hint="Début de la période.">
-            <Input
+        <div className="grid grid-cols-2 gap-4">
+          <SimField label="Depuis" htmlFor="start">
+            <input
               id="start"
               type="date"
               min={MIN_DATE}
               max={params.end}
               value={params.start}
               onChange={(e) => update({ start: e.target.value })}
+              className={`${underlineInputClass} text-base`}
             />
-          </FieldRow>
-          <FieldRow label="Jusqu'au" htmlFor="end" hint="Fin de la période.">
-            <Input
+          </SimField>
+          <SimField label="Jusqu'au" htmlFor="end">
+            <input
               id="end"
               type="date"
               min={params.start}
               max={today}
               value={params.end}
               onChange={(e) => update({ end: e.target.value })}
+              className={`${underlineInputClass} text-base`}
             />
-          </FieldRow>
+          </SimField>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+
+      <div className="mt-2 flex flex-col gap-3">
+        <ComingSoonButton variant="primary">
+          <Save className="size-4" />
+          Enregistrer la simulation
+        </ComingSoonButton>
+        <ComingSoonButton variant="white">
+          <Share2 className="size-4" />
+          Partager mes résultats
+        </ComingSoonButton>
+      </div>
+    </div>
   );
 }

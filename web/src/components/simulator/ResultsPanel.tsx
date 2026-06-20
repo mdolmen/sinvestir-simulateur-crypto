@@ -1,17 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Loader2, LineChart as LineChartIcon, TriangleAlert } from "lucide-react";
+import { Loader2, TriangleAlert } from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { CHART_TYPES, type ChartType } from "@/lib/config";
 import {
   formatCurrency,
   formatPercent,
@@ -22,8 +12,8 @@ import {
 import { cn } from "@/lib/utils";
 import type { SimulationResponse } from "@/lib/types";
 
-import { EvolutionChart } from "./EvolutionChart";
 import { KpiCard } from "./KpiCard";
+import { SectionTitle } from "./fields";
 
 interface ResultsPanelProps {
   result: SimulationResponse | null;
@@ -32,88 +22,94 @@ interface ResultsPanelProps {
   coin: string;
 }
 
-const CHART_ITEMS: Record<string, string> = Object.fromEntries(
-  CHART_TYPES.map((t) => [t.value, t.label]),
-);
+function SubStat({
+  label,
+  value,
+  tone = "default",
+}: {
+  label: string;
+  value: string;
+  tone?: "default" | "gain" | "loss";
+}) {
+  return (
+    <span className="flex flex-col gap-0.5">
+      <span className="text-xs font-light text-blue-sky">{label}</span>
+      <strong
+        className={cn(
+          "text-sm font-bold tabular-nums",
+          tone === "gain" && "text-gain",
+          tone === "loss" && "text-loss",
+          tone === "default" && "text-white",
+        )}
+      >
+        {value}
+      </strong>
+    </span>
+  );
+}
 
 export function ResultsPanel({ result, status, error, coin }: ResultsPanelProps) {
-  const [chartType, setChartType] = useState<ChartType>("area");
-
   if (status === "error") {
     return (
-      <Card className="rounded-2xl">
-        <CardContent className="flex flex-col items-center gap-3 py-16 text-center">
+      <div className="flex flex-col gap-6 lg:col-span-3">
+        <SectionTitle>Vos résultats</SectionTitle>
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-white/5 py-16 text-center">
           <TriangleAlert className="size-8 text-loss" />
-          <p className="font-medium">Impossible de calculer la simulation</p>
-          <p className="max-w-sm text-sm text-muted-foreground">{error}</p>
-        </CardContent>
-      </Card>
+          <p className="font-normal text-white">Impossible de calculer la simulation</p>
+          <p className="max-w-sm text-sm text-blue-light">{error}</p>
+        </div>
+      </div>
     );
   }
 
   if (!result) {
     return (
-      <Card className="rounded-2xl">
-        <CardContent className="flex flex-col items-center gap-3 py-16 text-center text-muted-foreground">
-          <Loader2 className="size-8 animate-spin text-primary" />
+      <div className="flex flex-col gap-6 lg:col-span-3">
+        <SectionTitle>Vos résultats</SectionTitle>
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-white/5 py-16 text-center text-blue-light">
+          <Loader2 className="size-8 animate-spin text-blue-sky" />
           <p className="text-sm">Calcul de la simulation…</p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   const gainTone = result.gains >= 0 ? "gain" : "loss";
 
   return (
-    <Card className={cn("rounded-2xl transition-opacity", status === "loading" && "opacity-60")}>
-      <CardHeader>
-        <CardTitle className="text-lg">Vos résultats</CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-6">
-        <div className="grid gap-3 sm:grid-cols-3">
-          <KpiCard label="Somme investie" value={formatCurrency(result.invested)} />
-          <KpiCard
-            label="Plus-value"
-            value={formatSignedCurrency(result.gains)}
-            hint={formatPercent(result.performance)}
-            tone={gainTone}
-            emphasis
-          />
-          <KpiCard label="Valeur finale" value={formatCurrency(result.final_value)} />
-        </div>
+    <div
+      className={cn(
+        "flex flex-col gap-6 transition-opacity lg:col-span-3",
+        status === "loading" && "opacity-60",
+      )}
+    >
+      <SectionTitle>Vos résultats</SectionTitle>
 
-        <div className="grid gap-3 sm:grid-cols-3">
-          <KpiCard label="Prix moyen d'acquisition" value={formatPrice(result.avg_price)} />
-          <KpiCard label="Quantité acquise" value={`${formatUnits(result.units)} ${coin}`} />
-          <KpiCard label="Versements" value={String(result.periods)} />
-        </div>
-
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center justify-between gap-2">
-            <h3 className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-              <LineChartIcon className="size-4" />
-              Évolution
-            </h3>
-            <Select
-              items={CHART_ITEMS}
-              value={chartType}
-              onValueChange={(value) => setChartType(value as ChartType)}
-            >
-              <SelectTrigger size="sm" aria-label="Type de graphique">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {CHART_TYPES.map((t) => (
-                  <SelectItem key={t.value} value={t.value}>
-                    {t.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+        <div className="col-span-2 flex flex-col justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 p-6">
+          <p className="text-sm font-normal text-white">Valeur finale</p>
+          <p className="text-3xl font-normal tabular-nums text-white">
+            {formatCurrency(result.final_value)}
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <SubStat label="Somme investie" value={formatCurrency(result.invested)} />
+            <SubStat
+              label="Plus-value"
+              value={formatSignedCurrency(result.gains)}
+              tone={gainTone}
+            />
           </div>
-          <EvolutionChart series={result.series} type={chartType} />
         </div>
-      </CardContent>
-    </Card>
+
+        <KpiCard
+          label="Performance"
+          value={formatPercent(result.performance)}
+          tone={gainTone}
+        />
+        <KpiCard label="Prix moyen d'acquisition" value={formatPrice(result.avg_price)} />
+        <KpiCard label="Quantité acquise" value={`${formatUnits(result.units)} ${coin}`} />
+        <KpiCard label="Versements" value={String(result.periods)} />
+      </div>
+    </div>
   );
 }

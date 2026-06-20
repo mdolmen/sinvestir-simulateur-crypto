@@ -87,7 +87,7 @@ export function EvolutionChart({ series, type }: EvolutionChartProps) {
       <Tooltip content={<ChartTooltip />} />
       <Legend
         formatter={(v) => LABELS[v as keyof typeof LABELS] ?? v}
-        wrapperStyle={{ fontSize: 13, paddingTop: 8 }}
+        wrapperStyle={{ fontSize: 13, paddingTop: 8, color: "var(--muted-foreground)" }}
       />
     </>
   );

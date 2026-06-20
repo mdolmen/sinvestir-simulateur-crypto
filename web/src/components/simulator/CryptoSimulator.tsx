@@ -6,6 +6,7 @@ import { ApiError, simulate } from "@/lib/api";
 import { SIM_DEFAULTS, todayISO } from "@/lib/config";
 import type { Frequency, SimulationRequest, SimulationResponse } from "@/lib/types";
 
+import { ChartPanel } from "./ChartPanel";
 import { Disclaimer } from "./Disclaimer";
 import { ParametersPanel } from "./ParametersPanel";
 import { ResultsPanel } from "./ResultsPanel";
@@ -62,11 +63,12 @@ export function CryptoSimulator(props: CryptoSimulatorProps) {
   }, [params]);
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,360px)_1fr]">
+    <div className="dark flex flex-col gap-10 rounded-3xl bg-sim-bg p-6 text-foreground sm:p-10">
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-5">
         <ParametersPanel params={params} onChange={setParams} />
         <ResultsPanel result={result} status={status} error={error} coin={params.coin} />
       </div>
+      <ChartPanel result={result} status={status} />
       <Disclaimer />
     </div>
   );

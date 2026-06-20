@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${lexend.variable} ${geistMono.variable} h-full antialiased`}
+      className={`dark ${lexend.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
