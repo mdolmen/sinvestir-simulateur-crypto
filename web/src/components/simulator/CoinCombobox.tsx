@@ -26,18 +26,27 @@ export function CoinCombobox({ value, onChange, id }: CoinComboboxProps) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    const term = query.trim();
     const controller = new AbortController();
-    const handle = setTimeout(() => {
-      setLoading(true);
-      searchCoins(query.trim(), controller.signal)
-        .then(setOptions)
-        .catch(() => {
-          if (!controller.signal.aborted) setOptions([]);
-        })
-        .finally(() => {
-          if (!controller.signal.aborted) setLoading(false);
-        });
-    }, 250);
+    const handle = setTimeout(
+      () => {
+        if (!term) {
+          setOptions([]);
+          setLoading(false);
+          return;
+        }
+        setLoading(true);
+        searchCoins(term, controller.signal)
+          .then(setOptions)
+          .catch(() => {
+            if (!controller.signal.aborted) setOptions([]);
+          })
+          .finally(() => {
+            if (!controller.signal.aborted) setLoading(false);
+          });
+      },
+      term ? 250 : 0,
+    );
     return () => {
       clearTimeout(handle);
       controller.abort();
@@ -51,7 +60,7 @@ export function CoinCombobox({ value, onChange, id }: CoinComboboxProps) {
       items={options}
       value={selected}
       filter={null}
-      itemToStringLabel={(coin) => `${coin.name} (${coin.symbol})`}
+      itemToStringLabel={(coin) => coin.name}
       itemToStringValue={(coin) => coin.symbol}
       isItemEqualToValue={(a, b) => a.symbol === b.symbol}
       onValueChange={(coin) => {
