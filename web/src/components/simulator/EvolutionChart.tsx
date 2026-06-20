@@ -6,7 +6,6 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  Legend,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -24,22 +23,23 @@ interface EvolutionChartProps {
   type: ChartType;
 }
 
-const COLORS = {
-  value: "var(--primary)",
-  invested: "var(--muted-foreground)",
+// Series colors mirror the reference: light blue (invested), gold (gains),
+// dark blue (final value).
+export const SERIES_COLORS = {
+  invested: "#1098f7",
+  gains: "#f8d047",
+  value: "#0049c6",
+} as const;
+
+const LABELS: Record<string, string> = {
+  value: "Capital final",
+  invested: "Somme investie",
+  gains: "Intérêts gagnés",
 };
-
-const LABELS = { value: "Valeur du portefeuille", invested: "Investi cumulé" };
-
-interface TooltipEntry {
-  dataKey?: string | number;
-  color?: string;
-  value?: number;
-}
 
 interface ChartTooltipProps {
   active?: boolean;
-  payload?: TooltipEntry[];
+  payload?: { dataKey?: string | number; color?: string; value?: number }[];
   label?: string | number;
 }
 
@@ -53,10 +53,13 @@ function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
     <div className="rounded-lg border bg-popover px-3 py-2 text-sm shadow-md">
       <p className="mb-1 font-medium">{label}</p>
       {payload.map((entry) => (
-        <p key={entry.dataKey} className="flex items-center justify-between gap-4 tabular-nums">
+        <p
+          key={entry.dataKey}
+          className="flex items-center justify-between gap-4 tabular-nums"
+        >
           <span className="flex items-center gap-1.5">
             <span className="size-2 rounded-full" style={{ background: entry.color }} />
-            {LABELS[entry.dataKey as keyof typeof LABELS]}
+            {LABELS[String(entry.dataKey)]}
           </span>
           <span className="font-medium">{formatCurrency(entry.value ?? 0)}</span>
         </p>
@@ -66,6 +69,9 @@ function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
 }
 
 export function EvolutionChart({ series, type }: EvolutionChartProps) {
+  // Enrich with gains (= value − invested) so all three series are available.
+  const data = series.map((p) => ({ ...p, gains: p.value - p.invested }));
+
   const axes = (
     <>
       <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
@@ -84,52 +90,78 @@ export function EvolutionChart({ series, type }: EvolutionChartProps) {
         axisLine={false}
         tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
       />
-      <Tooltip content={<ChartTooltip />} />
-      <Legend
-        formatter={(v) => LABELS[v as keyof typeof LABELS] ?? v}
-        wrapperStyle={{ fontSize: 13, paddingTop: 8, color: "var(--muted-foreground)" }}
-      />
+      <Tooltip content={<ChartTooltip />} cursor={{ stroke: "var(--border)" }} />
     </>
   );
 
-  return (
-    <ResponsiveContainer width="100%" height={320}>
-      {type === "bar" ? (
-        <BarChart data={series}>
+  if (type === "bar") {
+    // Stacked: invested (bottom) + gains (top) sum to the final value.
+    return (
+      <ResponsiveContainer width="100%" height={340}>
+        <BarChart data={data}>
           {axes}
-          <Bar dataKey="invested" fill={COLORS.invested} radius={[2, 2, 0, 0]} />
-          <Bar dataKey="value" fill={COLORS.value} radius={[2, 2, 0, 0]} />
-        </BarChart>
-      ) : type === "line" ? (
-        <LineChart data={series}>
-          {axes}
-          <Line dataKey="invested" stroke={COLORS.invested} dot={false} strokeWidth={2} />
-          <Line dataKey="value" stroke={COLORS.value} dot={false} strokeWidth={2} />
-        </LineChart>
-      ) : (
-        <AreaChart data={series}>
-          <defs>
-            <linearGradient id="fill-value" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={COLORS.value} stopOpacity={0.3} />
-              <stop offset="100%" stopColor={COLORS.value} stopOpacity={0.02} />
-            </linearGradient>
-          </defs>
-          {axes}
-          <Area
+          <Bar
             dataKey="invested"
-            stroke={COLORS.invested}
-            fill="none"
-            strokeWidth={2}
-            strokeDasharray="4 4"
+            stackId="capital"
+            fill={SERIES_COLORS.invested}
+            fillOpacity={0.85}
           />
-          <Area
-            dataKey="value"
-            stroke={COLORS.value}
-            fill="url(#fill-value)"
-            strokeWidth={2}
+          <Bar
+            dataKey="gains"
+            stackId="capital"
+            fill={SERIES_COLORS.gains}
+            fillOpacity={0.85}
+            radius={[2, 2, 0, 0]}
           />
-        </AreaChart>
-      )}
+        </BarChart>
+      </ResponsiveContainer>
+    );
+  }
+
+  if (type === "line") {
+    return (
+      <ResponsiveContainer width="100%" height={340}>
+        <LineChart data={data}>
+          {axes}
+          <Line dataKey="value" stroke={SERIES_COLORS.value} dot={false} strokeWidth={2.5} />
+          <Line dataKey="invested" stroke={SERIES_COLORS.invested} dot={false} strokeWidth={2} />
+          <Line dataKey="gains" stroke={SERIES_COLORS.gains} dot={false} strokeWidth={2} />
+        </LineChart>
+      </ResponsiveContainer>
+    );
+  }
+
+  return (
+    <ResponsiveContainer width="100%" height={340}>
+      <AreaChart data={data}>
+        <defs>
+          {Object.entries(SERIES_COLORS).map(([key, color]) => (
+            <linearGradient key={key} id={`fill-${key}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={color} stopOpacity={0.3} />
+              <stop offset="100%" stopColor={color} stopOpacity={0.04} />
+            </linearGradient>
+          ))}
+        </defs>
+        {axes}
+        <Area
+          dataKey="value"
+          stroke={SERIES_COLORS.value}
+          fill="url(#fill-value)"
+          strokeWidth={2.5}
+        />
+        <Area
+          dataKey="invested"
+          stroke={SERIES_COLORS.invested}
+          fill="url(#fill-invested)"
+          strokeWidth={2}
+        />
+        <Area
+          dataKey="gains"
+          stroke={SERIES_COLORS.gains}
+          fill="url(#fill-gains)"
+          strokeWidth={2}
+        />
+      </AreaChart>
     </ResponsiveContainer>
   );
 }
