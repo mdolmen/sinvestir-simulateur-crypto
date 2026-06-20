@@ -22,7 +22,7 @@ export default function Home() {
       <footer className="border-t border-white/10 pt-6 text-sm font-light text-blue-light">
         <p>
           Démo construite aux standards visuels de S&apos;investir. Prix historiques via Yahoo
-          Finance. Outil pédagogique — ne constitue pas un conseil en investissement.
+          Finance. Outil pédagogique, ne constitue pas un conseil en investissement.
         </p>
       </footer>
     </main>
