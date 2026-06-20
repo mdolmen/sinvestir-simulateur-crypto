@@ -38,12 +38,11 @@ class BacktestResult:
     series: list[SeriesPoint]
 
 
-def _price_at(prices: pd.Series[float], when: date) -> float:
-    """Last known close on or before `when` (forward-fill, per §5)."""
+def _price_on_or_before(prices: pd.Series[float], when: date) -> float | None:
+    """Last known close on or before `when` (forward-fill), or None if `when`
+    precedes the coin's first available price."""
     price = float(cast(float, prices.asof(pd.Timestamp(when))))
-    if math.isnan(price):
-        raise ValueError(f"no price available on or before {when.isoformat()}")
-    return price
+    return None if math.isnan(price) or price <= 0 else price
 
 
 def run_backtest(
@@ -54,29 +53,37 @@ def run_backtest(
     start: date,
     end: date,
 ) -> BacktestResult:
-    """Run a once/DCA backtest and compute the §4 contract outputs."""
+    """Run a once/DCA backtest and compute the §4 contract outputs.
+
+    Payment dates that fall before the coin's first available price buy nothing
+    (the period is padded with zeros) rather than failing, so a start date older
+    than the listing is allowed; `periods`/`invested` count realized payments only.
+    """
     if amount < 0:
         raise ValueError("amount must be non-negative")
 
     schedule = build_schedule(start, end, frequency)
-    periods = len(schedule)
-    invested = periods * amount
 
     cumulative_units = 0.0
+    invested = 0.0
+    periods = 0
     series: list[SeriesPoint] = []
-    for index, when in enumerate(schedule):
-        price = _price_at(prices, when)
+    for when in schedule:
+        price = _price_on_or_before(prices, when)
+        if price is None:
+            # Before the coin existed: nothing is invested, holdings stay empty.
+            series.append(SeriesPoint(date=when, invested=invested, value=0.0))
+            continue
         cumulative_units += amount / price
+        invested += amount
+        periods += 1
         series.append(
-            SeriesPoint(
-                date=when,
-                invested=(index + 1) * amount,
-                value=cumulative_units * price,
-            )
+            SeriesPoint(date=when, invested=invested, value=cumulative_units * price)
         )
 
     units = cumulative_units
-    final_value = units * _price_at(prices, end)
+    final_price = _price_on_or_before(prices, end)
+    final_value = units * final_price if final_price is not None else 0.0
     gains = final_value - invested
     avg_price = invested / units if units > 0 else 0.0
     performance = gains / invested if invested > 0 else 0.0

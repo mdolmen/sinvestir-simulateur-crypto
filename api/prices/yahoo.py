@@ -30,6 +30,9 @@ def normalize(frame: pd.DataFrame) -> pd.Series[float]:
     close.index = index.normalize()
     close.index.name = "date"
     close.name = "close"
+    # Drop non-positive closes (e.g. micro-cap coins that round to 0 in EUR) so
+    # forward-fill skips them instead of producing a divide-by-zero downstream.
+    close = close.where(close > 0)
     return close.sort_index()
 
 

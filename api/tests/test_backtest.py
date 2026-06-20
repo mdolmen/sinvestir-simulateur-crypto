@@ -100,9 +100,31 @@ def test_series_tracks_cumulative_invested_and_value() -> None:
     assert result.series[1].value == pytest.approx(300.0)  # 15 units * 20
 
 
-def test_payment_before_first_known_price_is_rejected() -> None:
+def test_payments_before_first_price_are_padded_with_zero() -> None:
+    # Prices only from 2022; monthly payments scheduled from 2021 buy nothing
+    # until data exists, instead of failing.
+    prices = _daily_series({"2022-01-01": 10.0, "2022-12-01": 20.0})
+    result = run_backtest(
+        prices, amount=100.0, frequency="monthly", start=date(2021, 1, 1), end=date(2022, 12, 1)
+    )
+    # Only the 12 payments from 2022-01 onward are realized.
+    assert result.periods == 12
+    assert result.invested == 1200.0
+    # The 2021 points are flat zero (invested and value), so gains there are zero.
+    assert result.series[0].date == date(2021, 1, 1)
+    assert result.series[0].invested == 0.0
+    assert result.series[0].value == 0.0
+    assert result.series[11].invested == 0.0  # last 2021 month, still nothing
+    assert result.series[12].invested == 100.0  # first 2022 payment
+
+
+def test_once_before_first_price_invests_nothing() -> None:
     prices = _daily_series({"2020-01-05": 10.0})
-    with pytest.raises(ValueError):
-        run_backtest(
-            prices, amount=10.0, frequency="once", start=date(2020, 1, 1), end=date(2020, 1, 5)
-        )
+    result = run_backtest(
+        prices, amount=10.0, frequency="once", start=date(2020, 1, 1), end=date(2020, 1, 5)
+    )
+    assert result.periods == 0
+    assert result.invested == 0.0
+    assert result.units == 0.0
+    assert result.final_value == 0.0
+    assert result.performance == 0.0
