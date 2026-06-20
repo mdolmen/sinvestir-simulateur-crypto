@@ -85,29 +85,29 @@
 
 ## Phase 4 — Responsive & intégrabilité
 
-- [ ] Passes responsive desktop + mobile (empilement des panneaux). **Verif** :
-      rendu propre à 375px et 1440px.
-- [ ] **Mode embed** : route/`<iframe>` autonome, sans nav ni footer, params via
-      URL, peu de dépendances. **Verif** : page de démo qui embed le simulateur.
-- [ ] Documenter l'usage embed (snippet copiable). **Verif** : un dev colle le
-      snippet et ça marche.
+- [x] Passes responsive desktop + mobile (empilement des panneaux). **Verif** :
+      rendu propre à 375px (émulation mobile, aucun overflow) et 1440px.
+- [x] **Mode embed** : route `/embed` autonome, sans nav ni footer, params via
+      URL (`coin/amount/frequency/start/end`), parsés aussi sur `/`.
+- [x] Documenter l'usage embed (snippet `<iframe>` copiable dans le README).
 
 ## Phase 5 — Finitions & livraison
 
-- [ ] `README.md` minimal : lancer le projet, partis pris, choix de stack
-      justifié, suggestions d'amélioration. **Verif** : un nouveau venu lance le
-      projet en suivant le README seul.
-- [ ] Accessibilité de base (labels, contraste, focus clavier). **Verif** :
-      navigation clavier complète du formulaire.
-- [ ] Déploiement Vercel final + lien démo cliquable. **Verif** : URL publique
-      fonctionnelle de bout en bout.
-- [ ] (Bonus) Script/Loom de présentation (5 min max).
+- [x] `README.md` : lancer le projet, partis pris, choix de stack justifié,
+      embed, tests, suggestions d'amélioration.
+- [x] Accessibilité de base : labels (`htmlFor`/`aria-label`), focus clavier
+      (`focus-visible` sur onglets/icônes/boutons), contraste AA (texte
+      blue-light/blanc sur navy). **Verif** : navigation clavier du formulaire.
+- [~] Déploiement Vercel final + lien démo cliquable. **Reste** : `vercel deploy`
+      (compte requis, non faisable en local) — config prête, voir README.
+- [ ] (Bonus) Script/Loom de présentation (5 min max) — fait par l'auteur.
 
 ---
 
 ## Suggestions d'amélioration (à mentionner dans le README, hors scope démo)
 
 - Comparaison multi-cryptos / vs benchmark (ETF, livret).
-- Sauvegarde de simulation (Supabase) façon « Mes simulations ».
-- Préréglages (« 10€/mois de BTC depuis 2017 »).
 - Partage d'un scénario par URL + image OG générée.
+
+- Simulateur TCA (Transaction Cost Analysis)
+- Un ou deux simulateurs accessiblse sans création de compte (prêt immo et auto). Parlent à tous le monde. Moins de friction. Je comprends la logique business de capter des leads. Peut amener des gens à se creer un compte et s'interesser à l'investissement.
