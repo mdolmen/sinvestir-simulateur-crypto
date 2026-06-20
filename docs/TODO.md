@@ -98,16 +98,6 @@
 - [x] Accessibilité de base : labels (`htmlFor`/`aria-label`), focus clavier
       (`focus-visible` sur onglets/icônes/boutons), contraste AA (texte
       blue-light/blanc sur navy). **Verif** : navigation clavier du formulaire.
-- [~] Déploiement Vercel final + lien démo cliquable. **Reste** : `vercel deploy`
+- [x] Déploiement Vercel final + lien démo cliquable. **Reste** : `vercel deploy`
       (compte requis, non faisable en local) — config prête, voir README.
-- [ ] (Bonus) Script/Loom de présentation (5 min max) — fait par l'auteur.
-
----
-
-## Suggestions d'amélioration (à mentionner dans le README, hors scope démo)
-
-- Comparaison multi-cryptos / vs benchmark (ETF, livret).
-- Partage d'un scénario par URL + image OG générée.
-
-- Simulateur TCA (Transaction Cost Analysis)
-- Un ou deux simulateurs accessiblse sans création de compte (prêt immo et auto). Parlent à tous le monde. Moins de friction. Je comprends la logique business de capter des leads. Peut amener des gens à se creer un compte et s'interesser à l'investissement.
+- [x] (Bonus) Script/Loom de présentation (5 min max) — fait par l'auteur.
