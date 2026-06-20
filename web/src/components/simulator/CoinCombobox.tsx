@@ -20,57 +20,49 @@ interface CoinComboboxProps {
 }
 
 export function CoinCombobox({ value, onChange, id }: CoinComboboxProps) {
-  // `query` starts at the current symbol so the picker resolves its full name.
-  const [query, setQuery] = useState(value);
+  // `query` is the input text. Empty → the backend returns the default coin list.
+  const [query, setQuery] = useState("");
   const [options, setOptions] = useState<Coin[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const term = query.trim();
     const controller = new AbortController();
-    const handle = setTimeout(
-      () => {
-        if (!term) {
-          setOptions([]);
-          setLoading(false);
-          return;
-        }
-        setLoading(true);
-        searchCoins(term, controller.signal)
-          .then(setOptions)
-          .catch(() => {
-            if (!controller.signal.aborted) setOptions([]);
-          })
-          .finally(() => {
-            if (!controller.signal.aborted) setLoading(false);
-          });
-      },
-      term ? 250 : 0,
-    );
+    const handle = setTimeout(() => {
+      setLoading(true);
+      searchCoins(query.trim(), controller.signal)
+        .then(setOptions)
+        .catch(() => {
+          if (!controller.signal.aborted) setOptions([]);
+        })
+        .finally(() => {
+          if (!controller.signal.aborted) setLoading(false);
+        });
+    }, 250);
     return () => {
       clearTimeout(handle);
       controller.abort();
     };
   }, [query]);
 
-  const selected = options.find((c) => c.symbol === value) ?? { symbol: value, name: value };
-
   return (
     <Combobox<Coin>
       items={options}
-      value={selected}
+      inputValue={query}
+      onInputValueChange={setQuery}
       filter={null}
       itemToStringLabel={(coin) => coin.name}
       itemToStringValue={(coin) => coin.symbol}
       isItemEqualToValue={(a, b) => a.symbol === b.symbol}
       onValueChange={(coin) => {
-        if (coin) onChange(coin.symbol);
+        if (coin) {
+          onChange(coin.symbol);
+          setQuery(coin.name);
+        }
       }}
-      onInputValueChange={setQuery}
     >
       <ComboboxInput
         id={id}
-        placeholder="Rechercher une crypto…"
+        placeholder={value ? `${value} — rechercher une crypto…` : "Rechercher une crypto…"}
         showClear
         className="w-full"
       />
@@ -83,9 +75,7 @@ export function CoinCombobox({ value, onChange, id }: CoinComboboxProps) {
             </ComboboxItem>
           ))}
         </ComboboxList>
-        <ComboboxEmpty>
-          {loading ? "Recherche…" : "Aucune crypto trouvée."}
-        </ComboboxEmpty>
+        <ComboboxEmpty>{loading ? "Recherche…" : "Aucune crypto trouvée."}</ComboboxEmpty>
       </ComboboxContent>
     </Combobox>
   );

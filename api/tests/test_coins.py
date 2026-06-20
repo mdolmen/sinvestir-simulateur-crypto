@@ -35,8 +35,27 @@ def test_yahoo_search_dedupes_by_base_symbol_and_cleans_name(
     assert matches == [CoinMatch("BTC", "Bitcoin"), CoinMatch("BCH", "Bitcoin Cash")]
 
 
-def test_yahoo_search_returns_empty_for_blank_query() -> None:
-    assert YahooPriceSource().search_coins("   ", "eur") == []
+def test_yahoo_search_blank_query_falls_back_to_default(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    frame = pd.DataFrame(
+        {"shortName": ["Bitcoin USD", "Ethereum USD"]},
+        index=["BTC-USD", "ETH-USD"],
+    )
+    captured: dict[str, str] = {}
+
+    class FakeLookup:
+        def __init__(self, query: str) -> None:
+            captured["query"] = query
+
+        def get_cryptocurrency(self, count: int) -> pd.DataFrame:
+            return frame
+
+    monkeypatch.setattr("prices.yahoo.yf.Lookup", FakeLookup)
+
+    matches = YahooPriceSource().search_coins("   ", "eur")
+    assert captured["query"] == "USD"  # default broad lookup
+    assert matches == [CoinMatch("BTC", "Bitcoin"), CoinMatch("ETH", "Ethereum")]
 
 
 def test_coins_route_returns_matches() -> None:

@@ -16,6 +16,7 @@ _CURRENCY_SUFFIX = re.compile(
 )
 _SEARCH_COUNT = 50  # Yahoo lookup window; deduped down to distinct base symbols.
 _SEARCH_LIMIT = 20  # max coins returned to the picker.
+_DEFAULT_QUERY = "USD"  # broad lookup that returns the major coins (empty-state list).
 
 
 def normalize(frame: pd.DataFrame) -> pd.Series[float]:
@@ -46,10 +47,9 @@ class YahooPriceSource:
         return normalize(frame)
 
     def search_coins(self, query: str, currency: str) -> list[CoinMatch]:
-        query = query.strip()
-        if not query:
-            return []
-        frame = yf.Lookup(query).get_cryptocurrency(count=_SEARCH_COUNT)
+        # Empty query → broad default lookup so the picker opens with major coins.
+        term = query.strip() or _DEFAULT_QUERY
+        frame = yf.Lookup(term).get_cryptocurrency(count=_SEARCH_COUNT)
         matches: list[CoinMatch] = []
         seen: set[str] = set()
         for symbol, row in frame.iterrows():
