@@ -6,8 +6,9 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  Line,
-  LineChart,
+  Cell,
+  Pie,
+  PieChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -43,8 +44,29 @@ interface ChartTooltipProps {
   label?: string | number;
 }
 
+interface PieTooltipProps {
+  active?: boolean;
+  payload?: { name?: string; value?: number; payload?: { color?: string } }[];
+}
+
 function yearTick(date: string): string {
   return date.slice(0, 4);
+}
+
+function PieTooltip({ active, payload }: PieTooltipProps) {
+  const slice = payload?.[0];
+  if (!active || !slice) return null;
+  return (
+    <div className="rounded-lg border bg-popover px-3 py-2 text-sm shadow-md">
+      <p className="flex items-center justify-between gap-4 tabular-nums">
+        <span className="flex items-center gap-1.5">
+          <span className="size-2 rounded-full" style={{ background: slice.payload?.color }} />
+          {slice.name}
+        </span>
+        <span className="font-medium">{formatCurrency(slice.value ?? 0)}</span>
+      </p>
+    </div>
+  );
 }
 
 function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
@@ -118,16 +140,46 @@ export function EvolutionChart({ series, type }: EvolutionChartProps) {
     );
   }
 
-  if (type === "line") {
+  if (type === "pie") {
+    const final = series[series.length - 1];
+    const invested = final?.invested ?? 0;
+    const gains = (final?.value ?? 0) - invested;
+    // The slices compose the final capital; on a loss there is no interest slice.
+    const slices =
+      gains >= 0
+        ? [
+            { name: "Somme investie", value: invested, color: SERIES_COLORS.invested },
+            { name: "Intérêts gagnés", value: gains, color: SERIES_COLORS.gains },
+          ]
+        : [{ name: "Capital final", value: final?.value ?? 0, color: SERIES_COLORS.invested }];
+
     return (
-      <ResponsiveContainer width="100%" height={340}>
-        <LineChart data={data}>
-          {axes}
-          <Line dataKey="value" stroke={SERIES_COLORS.value} dot={false} strokeWidth={2.5} />
-          <Line dataKey="invested" stroke={SERIES_COLORS.invested} dot={false} strokeWidth={2} />
-          <Line dataKey="gains" stroke={SERIES_COLORS.gains} dot={false} strokeWidth={2} />
-        </LineChart>
-      </ResponsiveContainer>
+      <div className="relative h-[340px] w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={slices}
+              dataKey="value"
+              nameKey="name"
+              innerRadius="62%"
+              outerRadius="92%"
+              paddingAngle={1.5}
+              stroke="none"
+            >
+              {slices.map((slice) => (
+                <Cell key={slice.name} fill={slice.color} />
+              ))}
+            </Pie>
+            <Tooltip content={<PieTooltip />} />
+          </PieChart>
+        </ResponsiveContainer>
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-xs font-light text-blue-light">Capital final</span>
+          <span className="text-2xl font-normal tabular-nums text-white">
+            {formatCurrency(final?.value ?? 0)}
+          </span>
+        </div>
+      </div>
     );
   }
 

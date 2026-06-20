@@ -2,7 +2,7 @@
 
 import type { Frequency } from "./types";
 
-export type ChartType = "area" | "line" | "bar";
+export type ChartType = "area" | "bar" | "pie";
 
 export const MIN_DATE = "2009-01-03"; // Bitcoin genesis — global input floor (§7).
 
@@ -26,6 +26,6 @@ export const FREQUENCY_OPTIONS: { value: Frequency; label: string }[] = [
 
 export const CHART_TYPES: { value: ChartType; label: string }[] = [
   { value: "area", label: "Aire" },
-  { value: "line", label: "Ligne" },
   { value: "bar", label: "Barres" },
+  { value: "pie", label: "Répartition" },
 ];

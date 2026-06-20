@@ -5,7 +5,7 @@ import {
   AreaChart as AreaIcon,
   BarChart3 as BarIcon,
   CalendarDays,
-  LineChart as LineIcon,
+  PieChart as PieIcon,
 } from "lucide-react";
 
 import { CHART_TYPES, type ChartType } from "@/lib/config";
@@ -23,8 +23,8 @@ interface ChartPanelProps {
 
 const TYPE_ICONS: Record<ChartType, typeof AreaIcon> = {
   area: AreaIcon,
-  line: LineIcon,
   bar: BarIcon,
+  pie: PieIcon,
 };
 
 function ChartKpis({ result }: { result: SimulationResponse }) {
