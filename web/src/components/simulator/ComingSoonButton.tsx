@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 const BASE =
-  "inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-light outline-none transition-all duration-300";
+  "inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-light outline-none transition-all duration-300 focus-visible:ring-2 focus-visible:ring-blue-sky focus-visible:ring-offset-2 focus-visible:ring-offset-sim-bg";
 
 const VARIANTS = {
   primary:

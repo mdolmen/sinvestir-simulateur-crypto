@@ -1,6 +1,12 @@
 import { CryptoSimulator } from "@/components/simulator/CryptoSimulator";
+import { parseSimParams } from "@/lib/params";
 
-export default function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const defaults = parseSimParams(await searchParams);
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-12 sm:py-16">
       <header className="flex flex-col gap-3">
@@ -17,7 +23,7 @@ export default function Home() {
         </p>
       </header>
 
-      <CryptoSimulator />
+      <CryptoSimulator {...defaults} />
 
       <footer className="border-t border-white/10 pt-6 text-sm font-light text-blue-light">
         <p>

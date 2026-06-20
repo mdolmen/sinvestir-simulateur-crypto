@@ -138,7 +138,9 @@ export function ChartPanel({ result, status }: ChartPanelProps) {
 
         {tab === "graph" && (
           <div className="flex items-center gap-2">
-            <span className="pr-1 text-sm font-light text-blue-light">Type de graphique</span>
+            <span className="hidden pr-1 text-sm font-light text-blue-light sm:inline">
+              Type de graphique
+            </span>
             {CHART_TYPES.map((t) => {
               const Icon = TYPE_ICONS[t.value];
               return (
@@ -149,7 +151,7 @@ export function ChartPanel({ result, status }: ChartPanelProps) {
                   aria-pressed={chartType === t.value}
                   onClick={() => setChartType(t.value)}
                   className={cn(
-                    "rounded-lg p-2 transition-colors",
+                    "rounded-lg p-2 transition-colors focus-visible:ring-2 focus-visible:ring-blue-sky focus-visible:outline-none",
                     chartType === t.value
                       ? "bg-white/10 text-white"
                       : "text-blue-light hover:text-white",
@@ -202,7 +204,7 @@ function TabButton({
       type="button"
       onClick={onClick}
       className={cn(
-        "flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-light transition-colors",
+        "flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-light transition-colors focus-visible:ring-2 focus-visible:ring-blue-sky focus-visible:outline-none",
         active ? "bg-white/10 text-white" : "text-blue-light hover:bg-white/[0.03]",
       )}
     >

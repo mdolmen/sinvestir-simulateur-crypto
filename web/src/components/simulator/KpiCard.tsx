@@ -19,7 +19,7 @@ export function KpiCard({ label, value, hint, tone = "default", className }: Kpi
       <span className="text-xs font-light text-blue-light">{label}</span>
       <span
         className={cn(
-          "text-2xl font-normal tabular-nums",
+          "text-xl font-normal break-words tabular-nums sm:text-2xl",
           tone === "gain" && "text-gain",
           tone === "loss" && "text-loss",
           tone === "default" && "text-white",

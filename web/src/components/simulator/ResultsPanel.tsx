@@ -88,7 +88,7 @@ export function ResultsPanel({ result, status, error, coin }: ResultsPanelProps)
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
         <div className="col-span-2 flex flex-col justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 p-6">
           <p className="text-sm font-normal text-white">Valeur finale</p>
-          <p className="text-3xl font-normal tabular-nums text-white">
+          <p className="text-2xl font-normal break-words tabular-nums text-white sm:text-3xl">
             {formatCurrency(result.final_value)}
           </p>
           <div className="grid grid-cols-2 gap-2">
